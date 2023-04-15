@@ -1,28 +1,12 @@
 body{
-    background: /*rgb(114, 114, 114);*/#5e85a2;
-    display: flex;
+    background-color: /*rgb(114, 114, 114);*/#5e85a2;
+    background-image: url("xadrezinho.avif");
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: flex; 
     align-items: center;
     height: 100vh;
     font-family: sans-serif;
-}
-
-.container{
-    width: 300px;
-    margin: auto;
-}
-
-input{
-    width: 100%;
-    border-radius: 8px;
-    padding: 8px 10px;
-    border: 1px solid #eee;
-    height: 45px;
-    background-color: #0a1d1f;
-    color: aqua;
-}
-
-span{
-    margin-bottom: 20px;
 }
 
 ul{
@@ -31,7 +15,7 @@ ul{
 }
 
 li{
-    background-color: #0a1d1f;
+    background-color: #10292c;
     color: aqua;
     border-radius: 8px;
     width: 100%;
@@ -39,6 +23,35 @@ li{
     margin: 5px 0;
 }
 
-li:hover,button:hover{
-    cursor: pointer;
+li:hover{
+    background-color: #00f;
+    color: #fff;
+}
+
+.hidden{
+    display: none
+}
+
+.nome-selecionado{
+    background-color: orange;
+    color: #fff;
+}
+
+.nome-nao-selecionado{
+    background-color: #10292c;
+    color: aqua;
+}
+
+h1{
+    text-align: center;
+}
+
+.container{
+    background-color: rgb(43, 83, 170);/*rgb(43, 83, 170); */
+    padding-bottom: 5px;
+    border-radius: 10px;
+}
+
+input[type=button]{
+    color: #fff;
 }
