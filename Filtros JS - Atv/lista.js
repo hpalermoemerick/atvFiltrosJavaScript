@@ -1,43 +1,100 @@
-let nameList = ["Aline","Otavio", "Camila", "Nareba", "Jean","Julio", "Julio Rodalo", "Rany", "Ti"]
-
+let nameList = []
+let nameList_new = ["Aline","Otavio", "Camila", "Nareba", ]//"Jean","Julio", "Julio Rodalo", "Rany", "Ti"]
 let listEl = document.getElementById("list")
-let span = document.querySelector("span")
+let caixa_texto = document.querySelector("input")
+let btnAdicionar = document.querySelector("#btnAdicionar")
+let btnSelecionar = document.querySelector("#btnSelecionar")
+let btnFiltrar = document.querySelector("#btnFiltrar")
+let btnRemover = document.querySelector("#btnRemover")
+let h3 = document.createElement("h3")
+let divRodape = document.createElement("div")
+let conteiner = document.querySelector("#aki")
+divRodape.appendChild(h3)
+conteiner.appendChild(divRodape)
 
-this.fillList()
 
-function fillList(list = nameList){
+// for (let index = 0; index < nameList_new.length; index++){
+//     adicionar(nameList_new[index])
+// }
+
+this.fillList(nameList_new)
+
+//adicionar
+btnAdicionar.addEventListener("click",() => {
+    adicionar(document.querySelector("#searchField").value)
+})
+
+//filtrar
+btnFiltrar.addEventListener("click", filtrar)
+
+//selecionar
+btnSelecionar.addEventListener("click",selecionar)
+
+//remover
+btnRemover.addEventListener("click",remover)
+
+
+/*=============================
+    FILL LIST
+=================================*/
+function fillList(esta_lista){
     listEl.innerHTML = ""
-    for(let i=0; i<list.length; i++){
-        let listItens = document.createElement("li")
-        listItens.innerHTML = list[i]
-        listEl.appendChild(listItens)
+    
+    for (let index = 0; index < esta_lista.length; index++) {
+        let elementoLi = document.createElement("li")
+        elementoLi.innerHTML = esta_lista[index]
+        listEl.appendChild(elementoLi)
     }
 }
+
 
 /*=============================
     FILTRAR
 =================================*/
 
-function filtrar(){
-    if(document.getElementById("searchField").value){
-        const filteredList = nameList.filter(el => {
-            const listItems = el.toLowerCase()
-            const searchWord = searchField.value.toLowerCase()
-            return listItems.includes(searchWord)
-        })
-        fillList(filteredList)
-    }else{
-        fillList()
-    }
+let estaFuncao = () => {
+    nameList = []
+    let texto = document.querySelector("input").value.toLowerCase()
+    let lista = nameList_new
+
+    //alertaErro("Não é possível usar um filtro vazio!!!")
     
+    lista = nameList_new.filter(elem => {
+        return elem.toLowerCase().includes(texto)
+    })
+    
+    fillList(lista)
 }
+
+
+//setar filtro
+let esta_filtrando = 1
+
+function filtrar(){
+    
+    esta_filtrando = esta_filtrando==0? 1:0
+    
+    document.querySelector("#searchField").focus()
+    document.querySelector("#searchField").value = ""
+
+    
+    if(esta_filtrando == 0){
+        alertaSucesso("Iniciando filtro!!!")
+        caixa_texto.addEventListener("input", estaFuncao)
+    }else{
+        alertaSucesso("Encerrando filtro!!!")
+        caixa_texto.removeEventListener('input', estaFuncao)
+        fillList(nameList_new)
+    }   
+}
+
+
 
 /*============================
     ADICIONAR
 ================================*/
 
-function adicionar(){
-    let nome_input = document.querySelector("#searchField").value
+function adicionar(nome_input){
     let nome = ""
 
     if(!nome_input){
@@ -46,16 +103,22 @@ function adicionar(){
     }else{
         nome_input.split(" ").forEach(element => {
             element = element.substring(0,1).toUpperCase() + element.substring(1,element.length).toLowerCase()
-            nome += element
+            nome += " " + element
         });
         nome.trimEnd()
         if(nome_repetido(nome)){
             alertaErro("Não é possível adicionar um nome repetido!!!")
             document.querySelector("#searchField").focus()
         }else{
-            nameList.push(nome)
-            fillList()
-            alertSucesso("Nome adicionado!")
+            nameList_new.push(nome)
+            let elementoLi= document.createElement("li")
+            elementoLi.innerHTML = nome
+            listEl.appendChild(elementoLi)
+            
+            alertaSucesso(`Nome adicionado: ${nome}`)
+            document.querySelector("#searchField").focus()
+            document.querySelector("#searchField").value = ""
+            
         }
     }
 }
@@ -71,81 +134,75 @@ function nome_repetido(nome){
 /*============================
     SELECIONAR
 ================================*/
-
 function selecionar(){
-    fillList()
-    //arrumar isto
-    alertSucesso("Clique no nome que deseja remover")
-    let lista_nomes = document.querySelectorAll("li")
-    let i = 0
-
-    lista_nomes.forEach(li => {
-        li.id = i
-        li.addEventListener("click",remover)
-        i = soma(i)
-        li.addEventListener("mouseenter",entrou)
-        li.addEventListener("mouseleave",saiu)
-    })
     
-}
+    if(esta_filtrando == 0){
+        alertaErro("Deve desativar o filtro!!!")
+    }else{
+        let esta_lista = document.querySelectorAll("li")
+        let selecao = -1
+        for (let index = 0; index < esta_lista.length; index++) {
+            if(esta_lista[index].className == "nome-selecionado"){
+                esta_lista[index].className = "nome-nao-selecionado"
+                selecao = index
+                break
+            }
+        }
+        if(selecao == esta_lista.length - 1){
+            selecao = -1
+        }
 
-/*============================
-    ITERAR O ID
-================================*/
+        esta_lista[selecao + 1].className = "nome-selecionado"
+        
+    }
+    
 
-function soma(i){
-    return i+1
 }
 
 /*============================
     REMOVER
 ================================*/
-function remover(event){
-    fillList()
-    let elem = event.target
-    let nome_excluir = elem.innerHTML
-    let acionou = elem.id
-    
-    if(acionou == "btnRemover"){
-        nameList.pop()
-        fillList()
-        
+function remover(){
+
+    let lista_elem = document.querySelectorAll("li")
+    let selecao = -1
+
+    for (let index = 0; index < lista_elem.length; index++){
+        if(lista_elem[index].className == "nome-selecionado"){
+            selecao = index
+            break
+        }        
+    }
+
+    // DESCOMENTAR ISSO
+    if(selecao == -1){
+        if(confirm(`Deseja remover "'${nameList_new[nameList_new.length-1]}"?`)){
+            alertaSucesso("Nome removido: "+nameList_new[nameList_new.length-1])
+            nameList_new.pop()
+            fillList(nameList_new)
+        }        
     }else{
-        nameList = nameList.filter(el => {
-            return el != nome_excluir
-        })
-        fillList()
+        let ser_excluido = nameList_new[selecao]
+        if(confirm(`Deseja remover "${ser_excluido}"?`)){
+            alertaSucesso("Nome removido: "+nameList_new[selecao])
+            nameList_new.splice(selecao,1)
+            fillList(nameList_new)
+        }
     }    
-    alertSucesso("Nome removido!")
 }
 
-/*============================
-    MOUSE ENTROU
-================================*/
-function entrou(event){
-    event.target.style.background = "#00f"
-    event.target.style.color = '#fff'
-}
-
-
-/*============================
-    MOUSE SAIU
-================================*/
-
-function saiu(event){
-    event.target.style.background = "#0a1d1f"
-    event.target.style.color = 'aqua'
-}
 
 /*============================
     ALERTA ERRO
 ================================*/
 
 function alertaErro(msg){
-    span.style.color = "#dd0000"
-    span.innerHTML= msg
+    h3.className = "alert alert-danger"
+    let texto = document.createTextNode(msg)
+    h3.appendChild(texto)
     setTimeout(e => {
-        span.innerHTML = ""
+        h3.innerHTML = ""
+        h3.className = "hidden"
     },2000)
 }
 
@@ -153,26 +210,12 @@ function alertaErro(msg){
     ALERTA SUCESSO
 ================================*/
 
-function alertSucesso(msg){
-    span.style.color = "#43fe5f"
-    span.innerHTML = msg
+function alertaSucesso(msg){
+    h3.className = "alert alert-success"
+    let texto = document.createTextNode(msg)
+    h3.appendChild(texto)
     setTimeout(e => {
-        span.innerHTML = ""
+        h3.innerHTML = ""
+        h3.className = "hidden"
     },2000)
 }
-
-
-//EXCLUIR ISSO
-document.getElementById("acerto-input").addEventListener("input",e => {
-    document.querySelector("span").style.color = document.getElementById("acerto-input").value
-    document.querySelector("span").innerHTML = "Acerto: "+document.getElementById("acerto-input").value 
-    document.querySelector("#searchField").value = document.getElementById("acerto-input").value
-})
-
-
-/*
-let corErro = document.getElementById("erro-input").value
-document.getElementById("erro-input").addEventListener("input",e => {
-    document.getElementById("erro").style.color = corErro
-    document.getElementById("erro").innerHTML = "Erro "+corErro 
-})*/
